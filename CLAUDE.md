@@ -33,6 +33,18 @@ The numbered module folders (`01-orient/` … `06-systems/`) are the original co
 | `workspace-audit.md` | A full workspace audit (missing files, stale scaffolding, uncommitted work) — read this before doing another one from scratch |
 | `skills/*.md` | Five reusable one-paste workflows: `weekly-status` (dual-audience status), `friday-status-update`, `weekly-research-synthesis`, `competitive-pulse-check`, `refresh-claude-md` (the one that produced this update) |
 
+## Agent Stack — "Comeback Coach"
+
+Three chained monitoring agents, collectively called Comeback Coach. Full detail — including the exact data contract between them and what's genuinely not built yet — lives in `agents/registry.md`; this is the summary every session should start with.
+
+1. **Metric Pulse Agent** (`agents/metric_pulse.py`) — nightly snapshot / Monday-morning Slack digest of Day-7 retention and streak-break rate, broken down by acquisition channel. Alerts on a **sample-size-adaptive statistical threshold**, not a fixed percentage-point cutoff (a fixed 2pt threshold was tried first and rebuilt after it fired mostly on noise — see `agents/metric-pulse.md`).
+2. **Anomaly-to-Hypothesis Agent** (`agents/anomaly_diagnosis.py`) — chained to #1's alert via a direct function call (not a queue or file handoff): decomposes the move into 3 drivers (streak-break rate, sessions/user, push opt-in rate), generates up to 3 ranked, rule-based hypotheses (an explicit table, not a model call), and either posts a full diagnostic to Slack, a "low confidence" variant, or silently logs-and-stops — see `agents/registry.md`'s Connection Plan for the exact conditions.
+3. **Weekly Insight Report** (`agents/weekly_insight.py`) — Friday 3-2-1 digest (Done / Changed / Watch) pulling `data/`, `change_log.md`, and `research/nps-analysis.md`. Its "Watch" item reuses #2's own step-functions directly, **not** a read of `agents/outcome-log.md`'s saved conclusion — a known architectural gap, not yet hardened (see the registry's "What's Genuinely Not Built Yet").
+
+A 4th piece, the **Learning Loop** (`agents/learning-loop.md`), is a weekly self-review prompt — not a 4th scheduled agent — that reads `outcome-log.md`, scores past diagnoses hit/miss/partial once real outcomes exist, and proposes heuristic updates here in `CLAUDE.md`. As of this writing it has nothing to score yet — 0 of 2 logged diagnoses have a real outcome filled in.
+
+**None of these three agents are deployed on a real schedule.** Every run to date has been manual, for verification (`python3 agents/<name>.py ...`). Don't assume live monitoring is happening — check `agents/registry.md` for what's actually running versus what's spec'd. A 6-month roadmap for what comes next is in `agents/roadmap.md`.
+
 ## How I Want Claude to Work With Me
 
 - **Interview first:** ask clarifying questions before building.
