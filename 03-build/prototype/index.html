@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Streakly — Comeback Prototype</title>
+<style>
+  :root {
+    --coral: #FF6B4A;
+    --coral-dark: #E5502F;
+    --cream: #FFF6EE;
+    --ink: #2B2222;
+    --muted: #8A7A73;
+    --card: #FFFFFF;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #EDE6E1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 24px 12px;
+  }
+  .phone {
+    width: 375px;
+    max-width: 100%;
+    min-height: 720px;
+    background: var(--cream);
+    border-radius: 36px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .screen {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+    padding: 32px 24px 28px;
+    animation: fadeIn 0.35s ease;
+  }
+  .screen.active { display: flex; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .flame {
+    font-size: 56px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-size: 24px;
+    margin: 0 0 8px;
+    color: var(--ink);
+  }
+  p.body-text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--muted);
+    margin: 0 0 20px;
+  }
+  .stat-card {
+    background: var(--card);
+    border-radius: 18px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    margin-bottom: 24px;
+  }
+  .stat-card .stat-icon { font-size: 28px; }
+  .stat-card .stat-number {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .stat-card .stat-title,
+  .perk-card .stat-title {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--ink);
+  }
+  .perk-card {
+    background: rgba(255,107,74,0.08);
+    border: 1px dashed var(--coral);
+    border-radius: 18px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .perk-card .stat-icon { font-size: 26px; }
+  .stat-card .stat-label,
+  .perk-card .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .spacer { flex: 1; }
+  .btn-primary {
+    background: var(--coral);
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+  .btn-primary:hover { background: var(--coral-dark); }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--muted);
+    border: none;
+    font-size: 14px;
+    padding: 14px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+  }
+  .btn-secondary:hover { color: var(--ink); }
+  .badge {
+    display: inline-flex;
+    align-self: flex-start;
+    background: rgba(255,107,74,0.12);
+    color: var(--coral-dark);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  .day-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: var(--coral);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 12px auto 24px;
+    box-shadow: 0 10px 24px rgba(255,107,74,0.35);
+  }
+  .day-circle .day-num { font-size: 34px; font-weight: 800; }
+  .day-circle .day-word { font-size: 12px; opacity: 0.9; }
+  .dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 16px;
+  }
+  .dots span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #D8CCC4;
+  }
+  .dots span.active { background: var(--coral); width: 18px; border-radius: 3px; }
+  .center { text-align: center; }
+  .note {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 6px;
+  }
+  .persona-picker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .persona-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .persona-chip {
+    background: var(--card);
+    border: 1px solid #E8DCD3;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .persona-chip.active {
+    background: var(--coral);
+    border-color: var(--coral);
+    color: #fff;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <!-- Screen 1: App re-open, streak broken (context / current-state trigger) -->
+  <div class="screen active" id="screen-1">
+    <div class="topbar"><span>Streakly</span><span>9:41</span></div>
+    <div class="persona-picker">
+      <span class="persona-label">Preview as:</span>
+      <button class="persona-chip active" onclick="selectPersona('priya', this)">Priya</button>
+      <button class="persona-chip" onclick="selectPersona('tom', this)">Tom</button>
+      <button class="persona-chip" onclick="selectPersona('amara', this)">Amara</button>
+    </div>
+    <div class="flame">🕯️</div>
+    <h1>Your streak reset</h1>
+    <p class="body-text">You missed a couple of days. That's alright — life happens to everyone.</p>
+    <div class="spacer"></div>
+    <button class="btn-primary" onclick="goTo(2)">See what's next</button>
+    <div class="dots"><span class="active"></span><span></span><span></span></div>
+  </div>
+
+  <!-- Screen 2: Comeback screen — personalized, welcoming, encouraging -->
+  <div class="screen" id="screen-2">
+    <div class="topbar"><span>Streakly</span><span>9:41</span></div>
+    <div class="badge">Welcome back</div>
+    <div class="flame">🐶</div>
+    <h1>It's okay — everyone gets busy.</h1>
+    <p class="body-text">Let's help you start a new streak by continuing right where you left off.</p>
+    <div class="stat-card">
+      <div class="stat-icon">🏆</div>
+      <div>
+        <div class="stat-number" id="best-streak-num">14 days</div>
+        <div class="stat-label">Your best streak so far — you can beat it</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📍</div>
+      <div>
+        <div class="stat-title" id="last-lesson-title">Lesson 12: Negotiation Basics</div>
+        <div class="stat-label">Where your streak stopped — pick back up here</div>
+      </div>
+    </div>
+    <div class="perk-card">
+      <div class="stat-icon">🎟️</div>
+      <div>
+        <div class="stat-title">We'll give you a pass to connect your streak</div>
+        <div class="stat-label">A little help getting back to your rhythm</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn-primary" onclick="goTo(3)">Continue where I left off</button>
+    <button class="btn-secondary" onclick="goTo(4)">Maybe later</button>
+    <div class="dots"><span></span><span class="active"></span><span></span></div>
+  </div>
+
+  <!-- Screen 3: Confirmation — new streak started, encouraging tone -->
+  <div class="screen" id="screen-3">
+    <div class="topbar"><span>Streakly</span><span>9:41</span></div>
+    <div class="center">
+      <div class="day-circle">
+        <div class="day-num" id="day-num">15</div>
+        <div class="day-word" id="day-word">DAY 15</div>
+      </div>
+      <h1>Right where you left off 🎉</h1>
+      <p class="body-text" id="continue-body">Your streak picked up at day 15 — no reset, no starting over. We'll be here to cheer you on.</p>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn-primary" onclick="goTo(2)">Restart demo</button>
+    <div class="note">Prototype only — the day count continues from the pre-break streak (a separate value from the best-streak stat shown on the previous screen); no real streak data behind this button.</div>
+    <div class="dots"><span></span><span></span><span class="active"></span></div>
+  </div>
+
+  <!-- Screen 4: "Maybe later" dismissal — deliberately distinct from Screen 3, no streak day started -->
+  <div class="screen" id="screen-4">
+    <div class="topbar"><span>Streakly</span><span>9:41</span></div>
+    <div class="center">
+      <div class="flame">👋</div>
+      <h1>No worries.</h1>
+      <p class="body-text">Come back when you are ready. We'll be here to support you on your journey!</p>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn-primary" onclick="goTo(1)">Got it</button>
+    <div class="note">Prototype only — "Maybe later" does not start a new streak day, unlike "Continue where I left off."</div>
+  </div>
+
+</div>
+
+<script>
+  // bestStreak: all-time longest streak (the "you can beat it" stat).
+  // preBreakStreak: the streak length at the moment it broke — this, not bestStreak,
+  // is what the comeback counter resumes from (see 04-team/spec-readiness.md).
+  // For these three personas the two happen to be the same number (the streak that
+  // broke was each one's personal best) — kept as separate fields so the code is
+  // wired correctly even when a persona/user has bestStreak !== preBreakStreak.
+  const PERSONAS = {
+    priya: { bestStreak: 417, preBreakStreak: 417, lastLesson: 'Lesson 301: Deep Work Habits' },
+    tom:   { bestStreak: 12,  preBreakStreak: 12,  lastLesson: 'Lesson 12: Negotiation Basics' },
+    amara: { bestStreak: 3,   preBreakStreak: 3,   lastLesson: 'Lesson 3: Basic Greetings' }
+  };
+  let currentPersona = 'priya';
+
+  function selectPersona(key, btn) {
+    currentPersona = key;
+    document.querySelectorAll('.persona-chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    renderPersona();
+  }
+
+  function renderPersona() {
+    const p = PERSONAS[currentPersona];
+    const continueDay = p.preBreakStreak + 1;
+    document.getElementById('best-streak-num').textContent = p.bestStreak + ' days';
+    document.getElementById('last-lesson-title').textContent = p.lastLesson;
+    document.getElementById('day-num').textContent = continueDay;
+    document.getElementById('day-word').textContent = 'DAY ' + continueDay;
+    document.getElementById('continue-body').textContent =
+      `Your streak picked up at day ${continueDay} — no reset, no starting over. We'll be here to cheer you on.`;
+  }
+
+  function goTo(n) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + n).classList.add('active');
+  }
+
+  renderPersona();
+</script>
+
+</body>
+</html>
