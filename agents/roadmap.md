@@ -6,7 +6,9 @@
 Metric Pulse, Anomaly-to-Hypothesis, Weekly Insight — built, chained, manually verified. Not yet scheduled anywhere real.
 
 ## Month 1 — Deployment Agent
-**Gap it closes:** all three Month-0 agents are real scripts that only run when a human remembers to type the command. Nothing here changes the *logic*; it wires the existing three into an actual cron/n8n schedule, sets up the real Slack webhook, and — critically — adds the A/B-test detection `metric_pulse.py` is currently missing (already flagged in `agents/registry.md`) before it fires false alarms on a real future experiment week.
+**Gap it closes:** all three Month-0 agents are real scripts that only run when a human remembers to type the command. Nothing here changes the *logic*; it wires the existing three into an actual cron/n8n schedule and sets up the real Slack webhook.
+
+*Note: this month's plan originally included adding A/B-test detection to `metric_pulse.py` — that got pulled forward and done on 2026-09-17, the same day the Learning Loop's first real review found a diagnosis had missed exactly because of it (see `agents/outcome-log.md`). Left here as a record that the roadmap isn't fixed in stone — a real finding jumped the queue.*
 
 ## Month 2 — Outcome Confirmation Agent
 **Gap it closes:** `agents/outcome-log.md` has a "what actually happened" column that's a placeholder by design — nobody is filling it in. This agent's one job: every time a diagnosis is logged, follow up N days later (Slack DM or scheduled check-in) asking "did hypothesis 1 turn out to be right?" and write the answer back into `outcome-log.md`. Without this, the Learning Loop (already built, Month 0) has nothing to score, forever.

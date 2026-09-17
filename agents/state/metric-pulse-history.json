@@ -21,8 +21,10 @@
       "avg_sessions_per_user": 3.2,
       "break_rate_pct": 26.0,
       "day7_retention_pct": 37.0,
+      "has_ab_test": false,
       "n_users": 100,
-      "push_open_rate_pct": 17.4
+      "push_open_rate_pct": 17.4,
+      "variants": []
     }
   },
   "2": {
@@ -47,8 +49,10 @@
       "avg_sessions_per_user": 3.2,
       "break_rate_pct": 39.0,
       "day7_retention_pct": 37.0,
+      "has_ab_test": false,
       "n_users": 100,
-      "push_open_rate_pct": 22.6
+      "push_open_rate_pct": 22.6,
+      "variants": []
     }
   },
   "3": {
@@ -73,8 +77,10 @@
       "avg_sessions_per_user": 3.2,
       "break_rate_pct": 45.0,
       "day7_retention_pct": 31.0,
+      "has_ab_test": false,
       "n_users": 100,
-      "push_open_rate_pct": 15.2
+      "push_open_rate_pct": 15.2,
+      "variants": []
     }
   },
   "4": {
@@ -99,8 +105,10 @@
       "avg_sessions_per_user": 3.2,
       "break_rate_pct": 35.0,
       "day7_retention_pct": 27.0,
+      "has_ab_test": false,
       "n_users": 100,
-      "push_open_rate_pct": 20.7
+      "push_open_rate_pct": 20.7,
+      "variants": []
     }
   },
   "5": {
@@ -125,8 +133,13 @@
       "avg_sessions_per_user": 4.5,
       "break_rate_pct": 45.0,
       "day7_retention_pct": 61.0,
+      "has_ab_test": true,
       "n_users": 100,
-      "push_open_rate_pct": 22.2
+      "push_open_rate_pct": 22.2,
+      "variants": [
+        "comeback",
+        "control"
+      ]
     }
   }
 }

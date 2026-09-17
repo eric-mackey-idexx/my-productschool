@@ -106,13 +106,31 @@ def step2_decompose(break_tw, break_lw, sessions_tw, sessions_lw, pushopt_tw, pu
 # Step 3 — Hypothesis generation (explicit rule table, not a model call)
 # ---------------------------------------------------------------------------
 
-def generate_hypotheses(drivers):
+def generate_hypotheses(drivers, active_experiment=None):
+    """
+    active_experiment: optional {"has_ab_test": bool, "variants": [...]}, from the same
+    check monday_retention_check.py already did. Added 2026-09-17 after outcome-log.md's
+    first scored diagnosis confirmed a real miss caused by exactly this gap — both the
+    cohort-quality-shift and product-regression hypotheses missed an active A/B test
+    that a direct check would have caught immediately. See the Weekly Learning Loop
+    Review entry in agents/outcome-log.md for the reasoning.
+    """
     by_name = {d["name"]: d for d in drivers}
     sessions = by_name["Sessions in week 1"]
     pushopt = by_name["Push opt-in rate"]
     breakrate = by_name["Streak-break rate"]
 
     hyps = []
+
+    # H0: active experiment, detected directly rather than inferred from driver movement —
+    # outranks every other hypothesis when present, since it's a confirmed fact, not a guess.
+    if active_experiment and active_experiment.get("has_ab_test"):
+        variants = ", ".join(active_experiment.get("variants", [])) or "unknown"
+        hyps.append({
+            "text": f"Active A/B test detected this period (variant: {variants}) — check the treatment vs. control split before trusting the blended number.",
+            "confidence": 9,
+            "why": "Directly detected in data/users.csv's variant column, not inferred from driver movement — should outrank a guess whenever one is present.",
+        })
 
     # H1: notification/engagement issue — sessions and push opt-in both fell meaningfully.
     if sessions["meaningful"] and sessions["delta"] < 0 and pushopt["meaningful"] and pushopt["delta"] < 0:
@@ -155,6 +173,15 @@ def generate_hypotheses(drivers):
 
 def sql_for_hypothesis(top_hyp):
     text = top_hyp["text"]
+    if "a/b test" in text.lower() or "active experiment" in text.lower():
+        return (
+            "SELECT variant, COUNT(*) AS users, AVG(day_7::int) AS day7_retention_rate,\n"
+            "       AVG(broke_streak_week1::int) AS break_rate\n"
+            "FROM streakly_users u\n"
+            "JOIN streakly_retention r ON r.user_id = u.user_id\n"
+            "WHERE u.cohort_week = (SELECT MAX(cohort_week) FROM streakly_users)\n"
+            "GROUP BY variant;"
+        )
     if "notification" in text.lower():
         return (
             "SELECT date, COUNT(*) AS push_sent, SUM(delivered) AS push_delivered,\n"
@@ -279,7 +306,7 @@ def log_outcome(metric_label, delta, hypotheses, stopped_at=None, log_path=OUTCO
 
 def run_diagnosis(metric_label, tw_pct, tw_n, lw_pct, lw_n,
                    break_tw, break_lw, sessions_tw, sessions_lw, pushopt_tw, pushopt_lw,
-                   dry_run=True, timestamp=None):
+                   active_experiment=None, dry_run=True, timestamp=None):
     # Step 1
     passed1, delta, threshold = step1_threshold_check(metric_label, tw_pct, tw_n, lw_pct, lw_n)
     if not passed1:
@@ -299,7 +326,7 @@ def run_diagnosis(metric_label, tw_pct, tw_n, lw_pct, lw_n,
     print(f"[Step 2] PASS — {n_meaningful} drivers showed meaningful movement. Continuing.")
 
     # Step 3
-    hypotheses = generate_hypotheses(drivers)
+    hypotheses = generate_hypotheses(drivers, active_experiment=active_experiment)
     top = hypotheses[0]
     if top["confidence"] <= MIN_TOP_CONFIDENCE:
         print(f"[Step 3] Top hypothesis confidence {top['confidence']}/10 <= {MIN_TOP_CONFIDENCE}. Posting low-confidence alert, stopping.")

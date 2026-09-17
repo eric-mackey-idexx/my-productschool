@@ -77,6 +77,11 @@ def compute_metrics(data, week):
     week_sessions = [s for s in data["sessions"] if s["user_id"] in user_ids]
     week_nudges = [n for n in data["nudges"] if n["user_id"] in user_ids]
 
+    # Same variant check monday_retention_check.py already does — added here after
+    # outcome-log.md confirmed a real miss caused by this exact gap (see the
+    # 2026-09-17 Weekly Learning Loop Review): metric_pulse never checked this before.
+    variants = sorted({u["variant"] for u in data["users"] if u["cohort_week"] == week and u["variant"]})
+
     overall = {
         "n_users": len(rows),
         "day7_retention_pct": rate(rows, "day_7"),
@@ -84,6 +89,8 @@ def compute_metrics(data, week):
         # Driver metrics for the chained anomaly-diagnosis agent (agents/anomaly_diagnosis.py).
         "avg_sessions_per_user": round(len(week_sessions) / len(rows), 2) if rows else 0.0,
         "push_open_rate_pct": pct(sum(1 for n in week_nudges if n["opened"] == "true"), len(week_nudges)),
+        "has_ab_test": len(variants) > 1,
+        "variants": variants,
     }
 
     by_channel = {}
@@ -255,6 +262,7 @@ def cmd_digest(args):
             break_tw=tw["overall"]["break_rate_pct"], break_lw=lw["overall"]["break_rate_pct"],
             sessions_tw=tw["overall"]["avg_sessions_per_user"], sessions_lw=lw["overall"]["avg_sessions_per_user"],
             pushopt_tw=tw["overall"]["push_open_rate_pct"], pushopt_lw=lw["overall"]["push_open_rate_pct"],
+            active_experiment={"has_ab_test": tw["overall"]["has_ab_test"], "variants": tw["overall"]["variants"]},
             dry_run=args.dry_run,
         )
     return 0

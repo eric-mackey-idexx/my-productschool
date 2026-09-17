@@ -38,5 +38,6 @@ Right now these two paths can't diverge, because they're the same code called tw
 
 - None of the three agents are wired into a real scheduler (cron, n8n, or otherwise) — every run so far has been manual, for verification.
 - No real Slack webhook is configured — every "delivery" so far has printed to the terminal.
-- The Pulse Agent doesn't detect an active A/B-test week (unlike its sibling script `monday_retention_check.py`, which does) — see `agents/metric-pulse.md`'s own flagged caveat.
-- The anomaly agent's hypothesis rules are unvalidated against real outcomes — see `agents/learning-loop.md`: 0 of 2 logged diagnoses are scoreable as of this writing.
+- The anomaly agent's hypothesis rules are still largely unvalidated against real outcomes — 1 of 3 logged diagnoses has been scored so far (see `agents/learning-loop.md`).
+
+**Resolved 2026-09-17:** the Pulse Agent's missing A/B-test detection (previously listed here as an open gap) caused a real, confirmed miss the same day it was flagged — logged in `agents/outcome-log.md`'s Weekly Learning Loop Review. Fixed: `metric_pulse.py` now checks the `variant` column and passes it through to the anomaly agent, which ranks a detected active experiment above its other guesses. Re-verified against the same real week 5 vs. week 4 data — the diagnosis that previously stopped at "low confidence" with two wrong hypotheses now correctly identifies the A/B test at 9/10 and proceeds through Step 4.

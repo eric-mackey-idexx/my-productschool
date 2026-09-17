@@ -41,7 +41,7 @@ Three chained monitoring agents, collectively called Comeback Coach. Full detail
 2. **Anomaly-to-Hypothesis Agent** (`agents/anomaly_diagnosis.py`) — chained to #1's alert via a direct function call (not a queue or file handoff): decomposes the move into 3 drivers (streak-break rate, sessions/user, push opt-in rate), generates up to 3 ranked, rule-based hypotheses (an explicit table, not a model call), and either posts a full diagnostic to Slack, a "low confidence" variant, or silently logs-and-stops — see `agents/registry.md`'s Connection Plan for the exact conditions.
 3. **Weekly Insight Report** (`agents/weekly_insight.py`) — Friday 3-2-1 digest (Done / Changed / Watch) pulling `data/`, `change_log.md`, and `research/nps-analysis.md`. Its "Watch" item reuses #2's own step-functions directly, **not** a read of `agents/outcome-log.md`'s saved conclusion — a known architectural gap, not yet hardened (see the registry's "What's Genuinely Not Built Yet").
 
-A 4th piece, the **Learning Loop** (`agents/learning-loop.md`), is a weekly self-review prompt — not a 4th scheduled agent — that reads `outcome-log.md`, scores past diagnoses hit/miss/partial once real outcomes exist, and proposes heuristic updates here in `CLAUDE.md`. As of this writing it has nothing to score yet — 0 of 2 logged diagnoses have a real outcome filled in.
+A 4th piece, the **Learning Loop** (`agents/learning-loop.md`), is a weekly self-review prompt — not a 4th scheduled agent — that reads `outcome-log.md`, scores past diagnoses hit/miss/partial once real outcomes exist, and proposes heuristic updates. It's already had its first real cycle: scored a diagnosis as a double miss, proposed the A/B-test-detection fix described above, and that fix was applied the same day — see `agents/outcome-log.md` for the full record.
 
 **None of these three agents are deployed on a real schedule.** Every run to date has been manual, for verification (`python3 agents/<name>.py ...`). Don't assume live monitoring is happening — check `agents/registry.md` for what's actually running versus what's spec'd. A 6-month roadmap for what comes next is in `agents/roadmap.md`.
 
@@ -70,8 +70,9 @@ A 4th piece, the **Learning Loop** (`agents/learning-loop.md`), is a weekly self
 - Target metric values and dates — flagged as missing in three separate docs, never set.
 - Eng sizing for the larger validation test — Raj's estimate doesn't exist yet.
 - None of the 4 new `agents/` scripts are actually scheduled anywhere (cron/n8n/ticket) — all four run manually only; each spec's "Wiring This Up for Real" section says what's needed.
-- `agents/metric_pulse.py` doesn't detect an active A/B-test week the way `monday_retention_check.py` does — its alerts will fire on an experiment week exactly like a real anomaly, with no distinction. Documented in `agents/metric-pulse.md`, not yet fixed.
-- `agents/anomaly_diagnosis.py`'s hypothesis rules are a small fixed table (3 templates), unvalidated against reality — every row in `agents/outcome-log.md`'s "what actually happened" column is still a placeholder.
+- `agents/anomaly_diagnosis.py`'s hypothesis rules are a small fixed table (now 4 templates), still largely unvalidated against reality — 1 of 3 logged diagnoses has been scored so far.
+
+**Resolved 2026-09-17:** `agents/metric_pulse.py` used to have no A/B-test detection, unlike `agents/monday_retention_check.py` — and that gap caused a confirmed real miss (see `agents/outcome-log.md`'s Weekly Learning Loop Review): the anomaly agent guessed "cohort quality shift" and "product regression" for a move that was actually the week-5 A/B test. Fixed by having `metric_pulse.py` check the `variant` column and pass it to `anomaly_diagnosis.py`, which now ranks a detected active experiment above inferred guesses. This is the Learning Loop's first real proposal-and-fix cycle, not a hypothetical one.
 
 ## Glossary (my product's words)
 
