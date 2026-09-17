@@ -1,0 +1,132 @@
+{
+  "1": {
+    "by_channel": {
+      "organic": {
+        "break_rate_pct": 14.7,
+        "day7_retention_pct": 41.2,
+        "n_users": 34
+      },
+      "paid": {
+        "break_rate_pct": 35.3,
+        "day7_retention_pct": 32.4,
+        "n_users": 34
+      },
+      "referral": {
+        "break_rate_pct": 28.1,
+        "day7_retention_pct": 37.5,
+        "n_users": 32
+      }
+    },
+    "overall": {
+      "avg_sessions_per_user": 3.2,
+      "break_rate_pct": 26.0,
+      "day7_retention_pct": 37.0,
+      "n_users": 100,
+      "push_open_rate_pct": 17.4
+    }
+  },
+  "2": {
+    "by_channel": {
+      "organic": {
+        "break_rate_pct": 44.1,
+        "day7_retention_pct": 38.2,
+        "n_users": 34
+      },
+      "paid": {
+        "break_rate_pct": 35.3,
+        "day7_retention_pct": 23.5,
+        "n_users": 34
+      },
+      "referral": {
+        "break_rate_pct": 37.5,
+        "day7_retention_pct": 50.0,
+        "n_users": 32
+      }
+    },
+    "overall": {
+      "avg_sessions_per_user": 3.2,
+      "break_rate_pct": 39.0,
+      "day7_retention_pct": 37.0,
+      "n_users": 100,
+      "push_open_rate_pct": 22.6
+    }
+  },
+  "3": {
+    "by_channel": {
+      "organic": {
+        "break_rate_pct": 50.0,
+        "day7_retention_pct": 29.4,
+        "n_users": 34
+      },
+      "paid": {
+        "break_rate_pct": 47.1,
+        "day7_retention_pct": 41.2,
+        "n_users": 34
+      },
+      "referral": {
+        "break_rate_pct": 37.5,
+        "day7_retention_pct": 21.9,
+        "n_users": 32
+      }
+    },
+    "overall": {
+      "avg_sessions_per_user": 3.2,
+      "break_rate_pct": 45.0,
+      "day7_retention_pct": 31.0,
+      "n_users": 100,
+      "push_open_rate_pct": 15.2
+    }
+  },
+  "4": {
+    "by_channel": {
+      "organic": {
+        "break_rate_pct": 41.2,
+        "day7_retention_pct": 29.4,
+        "n_users": 34
+      },
+      "paid": {
+        "break_rate_pct": 35.3,
+        "day7_retention_pct": 14.7,
+        "n_users": 34
+      },
+      "referral": {
+        "break_rate_pct": 28.1,
+        "day7_retention_pct": 37.5,
+        "n_users": 32
+      }
+    },
+    "overall": {
+      "avg_sessions_per_user": 3.2,
+      "break_rate_pct": 35.0,
+      "day7_retention_pct": 27.0,
+      "n_users": 100,
+      "push_open_rate_pct": 20.7
+    }
+  },
+  "5": {
+    "by_channel": {
+      "organic": {
+        "break_rate_pct": 38.2,
+        "day7_retention_pct": 82.4,
+        "n_users": 34
+      },
+      "paid": {
+        "break_rate_pct": 57.6,
+        "day7_retention_pct": 57.6,
+        "n_users": 33
+      },
+      "referral": {
+        "break_rate_pct": 39.4,
+        "day7_retention_pct": 42.4,
+        "n_users": 33
+      }
+    },
+    "overall": {
+      "avg_sessions_per_user": 4.5,
+      "break_rate_pct": 45.0,
+      "day7_retention_pct": 61.0,
+      "n_users": 100,
+      "push_open_rate_pct": 22.2
+    }
+  }
+}
