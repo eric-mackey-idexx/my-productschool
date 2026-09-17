@@ -18,6 +18,8 @@
 | Rank | Hypothesis | Confidence | What actually happened |
 |---|---|---|---|
 
+**What actually happened:** no hypothesis exists here to score — Step 1 stopped the loop before generation, so there's nothing in this table to mark hit/miss/partial. What *can* be recorded: whether the Step 1 gate's call (treat a +10.0pt move, under the 13.8pt threshold, as statistically consistent with noise) was itself the right call. That's **unconfirmed, not validated either way** — no document in this project has independently investigated this specific break-rate move the way `data/metric-diagnosis.md` investigated the retention move. One data point worth noting without over-reading it: per-variant break rates that week were comeback 40% and control 50% (both from `data/metric-diagnosis.md`'s Part 3), and both exceed week 4's 35% — so the move isn't purely an artifact of the treatment/control split, which leaves open whether it's a real, unexplained shift or just sampling noise at n=100. Recorded as open, not resolved, since fabricating a confirmed cause here would be worse than leaving it blank.
+
 ## Weekly Learning Loop Review — 2026-09-17
 
 **Scoreable this week:** 1 of 2 logged diagnosis checks (the streak-break-rate check stopped at Step 1 with no hypothesis generated — nothing to score there by design).
@@ -49,3 +51,5 @@
 
 | Rank | Hypothesis | Confidence | What actually happened |
 |---|---|---|---|
+
+**What actually happened:** duplicate of the same check earlier in this log (this metric is unaffected by the A/B-test-detection fix, since it never reached Step 2/3) — see the first "Streak-break rate moved +10.0 pts" entry above for the full note. Still unconfirmed either way.
