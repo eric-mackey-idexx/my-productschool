@@ -6,7 +6,7 @@
 
 Working scenario: the **Streakly Comeback experience** — recovering Day-7 retention for Streakly, a consumer habit + micro-learning app whose Day-7 retention slipped from 48% to 39% after a v2 redesign.
 
-**Status as of 2026-09-17:** past discovery. A prototype exists and has been through two rounds of persona testing, a real quantitative pilot (week-5 A/B test) has run and shown a Day-7 lift, and that result has been pressure-tested (sample size, confidence interval, a full-test design) rather than taken at face value. A recommendation memo and a 6-slide quarterly-review deck exist. What's still open: eng sizing for a larger validation test, the freeze-rule and monetization decisions, and target metric values — see "Open Threads" below.
+**Status as of 2026-09-17 (end of day):** past discovery, past the pilot pressure-test, now into monitoring tooling. A prototype exists and has been through two rounds of persona testing; a real quantitative pilot (week-5 A/B test) ran and showed a Day-7 lift that's been pressure-tested (sample size, confidence interval, a full-test design) rather than taken at face value. A recommendation memo, a PRD, and a 6-slide quarterly-review deck exist. New today: four real, runnable scheduled-agent scripts (`agents/`) for ongoing retention monitoring — a weekly digest, an alert monitor with a statistically adaptive threshold, a chained anomaly-diagnosis loop, and a 3-2-1 weekly insight report — all verified against real `data/` output, none yet actually scheduled anywhere. A `prd-writer` skill was also built, tested, and delivered. What's still open: eng sizing for a larger validation test, the freeze-rule and monetization decisions, target metric values, and real-world scheduling for the new agents — see "Open Threads" below.
 
 ## Where Things Live
 
@@ -26,8 +26,12 @@ The numbered module folders (`01-orient/` … `06-systems/`) are the original co
 | `04-team/stakeholders/*.md` | Raj, Lena, Marcus profiles — sourced facts vs. default-profile fill are marked separately in each file |
 | `04-team/spec-readiness.md`, `design-review.md`, `qa-checklist.md`, `codebase-summary.md` | Spec pressure-testing, design review, QA pass, and a codebase tour (using Habitica as a real-code stand-in, since Streakly has no actual codebase) |
 | `data/*.csv`, `metric-findings.md`, `metric-diagnosis.md`, `experiment-design.md` | The real quantitative pilot data and every analysis run against it |
-| `change_log.md` | Chronological log of everything built and why — check here for history before re-deriving something |
-| `skills/weekly-status.md` | Reusable skill: raw notes → calibrated status updates for the team vs. leadership |
+| `agents/*.py` + matching `*.md` specs | Real, runnable scheduled-agent scripts: `monday_retention_check`, `metric_pulse` (nightly snapshot/Monday digest, adaptive alert threshold), `anomaly_diagnosis` (chained diagnostic loop), `weekly_insight` (3-2-1 report). None are actually scheduled yet — run manually, see each spec's "Run It Manually" section |
+| `agents/outcome-log.md`, `agents/state/` | Runtime output of the agents above — a hypothesis-tracking log and the metric-pulse history snapshot, not hand-written docs |
+| `reports/YYYY-MM-DD.md` | Output of `agents/weekly_insight.py` |
+| `change_log.md` | Chronological log of everything built and why — check here for history before re-deriving something. Went stale for a full day on 2026-09-17 before being caught and backfilled — worth checking it's current before trusting it, not just assuming |
+| `workspace-audit.md` | A full workspace audit (missing files, stale scaffolding, uncommitted work) — read this before doing another one from scratch |
+| `skills/*.md` | Five reusable one-paste workflows: `weekly-status` (dual-audience status), `friday-status-update`, `weekly-research-synthesis`, `competitive-pulse-check`, `refresh-claude-md` (the one that produced this update) |
 
 ## How I Want Claude to Work With Me
 
@@ -53,7 +57,9 @@ The numbered module folders (`01-orient/` … `06-systems/`) are the original co
 - Free vs. paywalled streak-freeze, and the streak-intensity trade-off — Marcus's calls, not yet made.
 - Target metric values and dates — flagged as missing in three separate docs, never set.
 - Eng sizing for the larger validation test — Raj's estimate doesn't exist yet.
-- 8 files (see `workspace-audit.md`) exist locally but aren't committed to git as of 2026-09-17.
+- None of the 4 new `agents/` scripts are actually scheduled anywhere (cron/n8n/ticket) — all four run manually only; each spec's "Wiring This Up for Real" section says what's needed.
+- `agents/metric_pulse.py` doesn't detect an active A/B-test week the way `monday_retention_check.py` does — its alerts will fire on an experiment week exactly like a real anomaly, with no distinction. Documented in `agents/metric-pulse.md`, not yet fixed.
+- `agents/anomaly_diagnosis.py`'s hypothesis rules are a small fixed table (3 templates), unvalidated against reality — every row in `agents/outcome-log.md`'s "what actually happened" column is still a placeholder.
 
 ## Glossary (my product's words)
 
@@ -65,3 +71,6 @@ The numbered module folders (`01-orient/` … `06-systems/`) are the original co
 | The "pass" | Shorthand for the streak-connect/freeze mechanic on the Comeback screen; its actual duration/frequency rule is still undefined |
 | Persona testing (Round 1 / Round 2) | Simulated user-reaction testing against Priya, Tom, and Amara — personas, not real interview subjects |
 | Triad session | The working session format bringing Eric + Raj (eng) + Lena (design) together on the prototype |
+| Adaptive threshold | The sample-size-scaled statistical alert bar in `agents/metric_pulse.py` (roughly 2x the standard error of the week-over-week difference) — replaces a fixed percentage-point cutoff, which fired mostly on noise at this project's actual weekly volume |
+| Driver / metric tree decomposition | Breaking a retention move into component signals (streak-break rate, sessions/user, push opt-in rate) to explain *why* it moved — used in both `data/metric-diagnosis.md` and `agents/anomaly_diagnosis.py` |
+| Outcome log | `agents/outcome-log.md` — every anomaly-diagnosis run's ranked hypotheses, with a placeholder column for what was actually confirmed true, meant to become a track record over time |
